@@ -87,6 +87,8 @@ namespace HP.Migrations
 
                     b.Property<string>("Name");
 
+                    b.Property<int>("Score");
+
                     b.HasKey("Id");
                 });
 

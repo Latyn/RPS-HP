@@ -170,7 +170,8 @@ namespace HP.Migrations
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Chose = table.Column<string>(nullable: true),
                     GameId = table.Column<int>(nullable: true),
-                    Name = table.Column<string>(nullable: true)
+                    Name = table.Column<string>(nullable: true),
+                    Score = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {

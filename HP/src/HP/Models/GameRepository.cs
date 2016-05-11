@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
+using Microsoft.Data.Entity;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -54,7 +55,7 @@ namespace HP.Models
         {
             List<Tournament> Tournaments = toTournament(EncodedArray);
             Player winnerPlayer = new Player();
-            var TournamentWiner = "";
+            Player secondPlayer = new Player();
 
             int value = 0;
 
@@ -78,22 +79,75 @@ namespace HP.Models
                         PlayerScores[winner.Name] = value += 1;
                     }
                 }
-                foreach (var item in PlayerScores)
-                {
-                    if (PlayerScores.Values.Max() == item.Value)
-                    {
-                        TournamentWiner = item.Key;
-                    }
-                }
 
-
-
-                winnerPlayer = _context.Players.Where(m => m.Name == TournamentWiner).First();
+                winnerPlayer = GetHighest();
+                secondPlayer = GetHighest();
+                setPoints(tournaments, winnerPlayer, secondPlayer);
                 PlayerScores.Clear();
             }
 
             return winnerPlayer;
 
+        }
+
+        public void CheckTournament(List<Tournament> Tournaments)
+        {
+            Player winnerPlayer = new Player();
+            Player secondPlayer = new Player();
+            int value = 0;
+
+            foreach (var tournaments in Tournaments)
+            {
+                foreach (var game in tournaments.Games)
+                {
+                   
+                    Player winner = Winner(game);
+                    // check to see if we need to fetch a court's data
+                    if (PlayerScores.ContainsKey(winner.Name) == false)
+                    {
+                        value = 0;
+                        if (winner.Name != null)
+                        {
+                            PlayerScores[winner.Name] = value += 1;
+                        }
+                    }
+                    else
+                    {
+                        PlayerScores[winner.Name] = value += 1;
+                    }
+                }
+                winnerPlayer = GetHighest();
+                secondPlayer = GetHighest();
+                setPoints(tournaments, winnerPlayer, secondPlayer);
+
+                PlayerScores.Clear();
+                //ClearDB();
+            }
+        }
+
+        private Player GetHighest()
+        {
+            Player highestPlayer = new Player();
+            var highest="";
+            var score = 0;
+
+            foreach (var item in PlayerScores)
+            {
+                if (PlayerScores.Values.Max() == item.Value)
+                {
+                    highest = item.Key;
+                    score = item.Value;
+                }
+            }
+
+            highestPlayer = _context.Players.Where(m => m.Name == highest).First();
+            highestPlayer.Score = score;
+
+            _context.SaveChanges();
+
+            PlayerScores.Remove(highest);
+
+            return highestPlayer;
         }
 
         public string readFile(string ResultUrl)
@@ -165,6 +219,7 @@ namespace HP.Models
                 }
                 tournament.Games = Games;
                 Tournaments.Add(tournament);
+
             }
 
             return Tournaments;
@@ -213,8 +268,30 @@ namespace HP.Models
             }
 
         }
-        public void setPoints(Game game)
+        private void setPoints(Tournament mytournament, Player winner, Player second)
         {
+
+            mytournament.FirstPlaceScore = 3;
+            mytournament.SecondPlaceScore = 1;
+            mytournament.First = winner.Name;
+            mytournament.Second = second.Name;
+
+            _context.Championships.Add(mytournament);
+
+            _context.SaveChanges();
+        }
+        private void ClearDB()
+        {
+
+            _context.Players.ToList().ForEach(p => _context.Players.Remove(p));
+            _context.SaveChanges();
+
+            _context.Championships.ToList().ForEach(p => _context.Games.ToList().ForEach(e => _context.Games.Remove(e)));
+            _context.SaveChanges();
+
+            _context.Championships.ToList().ForEach(p => _context.Championships.Remove(p));
+            _context.SaveChanges();
+
         }
     }
 }

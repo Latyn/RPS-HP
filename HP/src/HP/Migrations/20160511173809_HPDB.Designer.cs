@@ -8,7 +8,7 @@ using HP.Models;
 namespace HP.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20160511001845_HPDB")]
+    [Migration("20160511173809_HPDB")]
     partial class HPDB
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -87,6 +87,8 @@ namespace HP.Migrations
                     b.Property<int?>("GameId");
 
                     b.Property<string>("Name");
+
+                    b.Property<int>("Score");
 
                     b.HasKey("Id");
                 });

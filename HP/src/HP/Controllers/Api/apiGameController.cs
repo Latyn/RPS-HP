@@ -52,25 +52,9 @@ namespace HP.Controllers.Api
 
             List<Tournament> Tournaments = _repository.toTournament(JsonText);
 
-            foreach (var tournaments in Tournaments)
-            {
-                foreach (var game in tournaments.Games)
-                {
-                    int value = 0;
-                    Player winner = Winner(game);
-                    // check to see if we need to fetch a court's data
-                    if (PlayerScores.ContainsKey(winner.Name) == false)
-                    {
-                        if (winner.Name != null)
-                        {
-                            PlayerScores[winner.Name] = value+=1;
-                        }
-                    }
-                }
-                var TournamentWiner = PlayerScores.Keys.Max();
-                PlayerScores.Clear();
-            }         
+            _repository.CheckTournament(Tournaments);
         }
+
 
         //method algorithm that takes a two-element list
         //return the full player object (name and chose(strategy)) of the winning player

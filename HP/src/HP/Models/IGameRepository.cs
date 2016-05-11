@@ -12,5 +12,6 @@ namespace HP.Models
         Game addGame(Game player);
         Tournament addTournament(Tournament player);
         List<Tournament> toTournament(string JsonText);
+        void CheckTournament(List<Tournament> Tournaments);
     }
 }

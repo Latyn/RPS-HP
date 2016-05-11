@@ -18,6 +18,9 @@ namespace HP.Models
         //Strategy
         public string Chose { get; set; }
 
+        [JsonIgnore]
+        public int Score { get; set; }
+
     }
 
     //type of selection 
