@@ -28,14 +28,29 @@ namespace HP.Controllers.Api
             //Json now as a part of the father controller class
             return Json(new { players    = tops });
         }
-        
+
+        //To check winner in a tournament
+        [HttpGet("api/championship/tournament")]
+        public JsonResult Tournament()
+        {
+            var JsonText = _repository.Result();
+
+            Player winner = _repository.Result(JsonText);
+
+            //Json now as a part of the father controller class
+
+            string[] text = new string[2] { winner.Name, winner.Chose };
+
+            return Json(text);
+        }
+
         [HttpPost("/api/championship/result")]
         public void Result()
         {
 
             var JsonText = _repository.Result();
 
-            List<Tournament> Tournaments = toTournament(JsonText);
+            List<Tournament> Tournaments = _repository.toTournament(JsonText);
 
             foreach (var tournaments in Tournaments)
             {
@@ -56,10 +71,18 @@ namespace HP.Controllers.Api
                 PlayerScores.Clear();
             }         
         }
+
+        //method algorithm that takes a two-element list
+        //return the full player object (name and chose(strategy)) of the winning player
         private Player Winner(Game game)
         {
-                
-                
+            //If the number of players is not equal to 2, raise an exception.
+            if (game.Players.Count > 2)
+            {
+                throw new Exception("Cannot have more than two players.");
+            }
+            else
+            {
                 switch (game.Players[0].Chose)
                 {
                     case "R":
@@ -67,6 +90,7 @@ namespace HP.Controllers.Api
                         {
                             case "P": return game.Players[1];
                             case "S": return game.Players[0];
+                            case "R": return game.Players[0];//In case of draw we return the first player
                             default: throw new Exception("Logic fail.");
                         }
                     case "S":
@@ -74,6 +98,7 @@ namespace HP.Controllers.Api
                         {
                             case "R": return game.Players[1];
                             case "P": return game.Players[0];
+                            case "S": return game.Players[0];//In case of draw we return the first player
                             default: throw new Exception("Logic fail.");
                         }
                     case "P":
@@ -81,54 +106,57 @@ namespace HP.Controllers.Api
                         {
                             case "S": return game.Players[1];
                             case "R": return game.Players[0];
+                            case "P": return game.Players[0];//In case of draw we return the first player
                             default: throw new Exception("Logic fail.");
                         }
-                default: throw new Exception("Logic fail.");
-
-                }            
-        }
-        //Method to give the correct structure to Json with no tags
-        private List<Tournament> toTournament(string JsonText)
-        {
-            //Parse Json text to array
-            JArray obj = JArray.Parse(JsonText);
-
-            List<Tournament> Tournaments = new List<Tournament>();
-
-
-            //Checking each level of the array and parsing to a correct structure
-            foreach (var item in obj)
-            {
-                var tournament = new Tournament();
-                List<Game> Games = new List<Game>();
-
-                foreach (var item2 in item)
-                {
-                    var game = new Game();
-                    List<Player> Players = new List<Player>();
-
-                    foreach (var item3 in item2)
-                    {
-                        var player = new Player();
-                        player.Name = item3[0].ToString();
-                        player.Chose = item3[1].ToString();
-
-                        var tempPlayer = _repository.addPlayer(player);
-                        Players.Add(tempPlayer);
-
-                    }
-                    game.Players = Players;
-
-                    var tempGame = _repository.addGame(game);
-                    Games.Add(tempGame);
+                    default: throw new Exception("Logic fail.");
 
                 }
-                tournament.Games = Games;
-                Tournaments.Add(tournament);
             }
-
-            return Tournaments;
+           
         }
+        ////Method to give the correct structure to Json with no tags
+        //private List<Tournament> toTournament(string JsonText)
+        //{
+        //    //Parse Json text to array
+        //    JArray obj = JArray.Parse(JsonText);
+
+        //    List<Tournament> Tournaments = new List<Tournament>();
+
+
+        //    //Checking each level of the array and parsing to a correct structure
+        //    foreach (var item in obj)
+        //    {
+        //        var tournament = new Tournament();
+        //        List<Game> Games = new List<Game>();
+
+        //        foreach (var item2 in item)
+        //        {
+        //            var game = new Game();
+        //            List<Player> Players = new List<Player>();
+
+        //            foreach (var item3 in item2)
+        //            {
+        //                var player = new Player();
+        //                player.Name = item3[0].ToString();
+        //                player.Chose = item3[1].ToString();
+
+        //                var tempPlayer = _repository.addPlayer(player);
+        //                Players.Add(tempPlayer);
+
+        //            }
+        //            game.Players = Players;
+
+        //            var tempGame = _repository.addGame(game);
+        //            Games.Add(tempGame);
+
+        //        }
+        //        tournament.Games = Games;
+        //        Tournaments.Add(tournament);
+        //    }
+
+        //    return Tournaments;
+        //}
 
         [HttpPost("/api/championship/New")]
         public IActionResult New()

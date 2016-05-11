@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNet.Hosting;
 using Microsoft.AspNet.Http;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,6 +15,7 @@ namespace HP.Models
 
         private ApplicationDbContext _context;
         private IHostingEnvironment _host;
+        static Dictionary<string, int> PlayerScores = new Dictionary<string, int>();
 
         public GameRepository(ApplicationDbContext context, IHostingEnvironment host)
         {
@@ -47,6 +49,53 @@ namespace HP.Models
 
         }
 
+        //Receive a torunament and give us the winner
+        public Player Result(string EncodedArray)
+        {
+            List<Tournament> Tournaments = toTournament(EncodedArray);
+            Player winnerPlayer = new Player();
+            var TournamentWiner = "";
+
+            int value = 0;
+
+            foreach (var tournaments in Tournaments)
+            {
+                foreach (var game in tournaments.Games)
+                {
+                    
+                    Player winner = Winner(game);
+                    // check to see if we need to fetch a court's data
+                    if (PlayerScores.ContainsKey(winner.Name) == false)
+                    {
+                        value = 0;
+                        if (winner.Name != null)
+                        {
+                            PlayerScores[winner.Name] = value += 1;
+                        }
+                    }
+                    else
+                    {
+                        PlayerScores[winner.Name] = value += 1;
+                    }
+                }
+                foreach (var item in PlayerScores)
+                {
+                    if (PlayerScores.Values.Max() == item.Value)
+                    {
+                        TournamentWiner = item.Key;
+                    }
+                }
+
+
+
+                winnerPlayer = _context.Players.Where(m => m.Name == TournamentWiner).First();
+                PlayerScores.Clear();
+            }
+
+            return winnerPlayer;
+
+        }
+
         public string readFile(string ResultUrl)
         {
             
@@ -76,6 +125,93 @@ namespace HP.Models
             _context.Championships.Add(tournament);
             _context.SaveChanges();
             return tournament;
+        }
+
+        //Method to give the correct structure to Json with no tags
+        public List<Tournament> toTournament(string JsonText)
+        {
+            //Parse Json text to array
+            JArray obj = JArray.Parse(JsonText);
+
+            List<Tournament> Tournaments = new List<Tournament>();
+
+
+            //Checking each level of the array and parsing to a correct structure
+            foreach (var item in obj)
+            {
+                var tournament = new Tournament();
+                List<Game> Games = new List<Game>();
+
+                foreach (var item2 in item)
+                {
+                    var game = new Game();
+                    List<Player> Players = new List<Player>();
+
+                    foreach (var item3 in item2)
+                    {
+                        var player = new Player();
+                        player.Name = item3[0].ToString();
+                        player.Chose = item3[1].ToString();
+
+                        var tempPlayer = addPlayer(player);
+                        Players.Add(tempPlayer);
+
+                    }
+                    game.Players = Players;
+
+                    var tempGame = addGame(game);
+                    Games.Add(tempGame);
+
+                }
+                tournament.Games = Games;
+                Tournaments.Add(tournament);
+            }
+
+            return Tournaments;
+        }
+
+        //method algorithm that takes a two-element list
+        //return the full player object (name and chose(strategy)) of the winning player
+        private Player Winner(Game game)
+        {
+            //If the number of players is not equal to 2, raise an exception.
+            if (game.Players.Count > 2)
+            {
+                throw new Exception("Cannot have more than two players.");
+            }
+            else
+            {
+                switch (game.Players[0].Chose)
+                {
+                    case "R":
+                        switch (game.Players[1].Chose)
+                        {
+                            case "P": return game.Players[1];
+                            case "S": return game.Players[0];
+                            case "R": return game.Players[0];//In case of draw we return the first player
+                            default: throw new Exception("Logic fail.");
+                        }
+                    case "S":
+                        switch (game.Players[1].Chose)
+                        {
+                            case "R": return game.Players[1];
+                            case "P": return game.Players[0];
+                            case "S": return game.Players[0];//In case of draw we return the first player
+                            default: throw new Exception("Logic fail.");
+                        }
+                    case "P":
+                        switch (game.Players[1].Chose)
+                        {
+                            case "S": return game.Players[1];
+                            case "R": return game.Players[0];
+                            case "P": return game.Players[0];//In case of draw we return the first player
+                            default: throw new Exception("Logic fail.");
+                        }
+                    default: throw new Exception("Logic fail.");
+
+                }
+            }
+
         }
         public void setPoints(Game game)
         {

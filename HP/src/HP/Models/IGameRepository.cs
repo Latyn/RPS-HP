@@ -7,8 +7,10 @@ namespace HP.Models
         IEnumerable<string> GetTop(int count);
         void New();
         string Result();
+        Player Result(string EncodedTournament);
         Player addPlayer(Player player);
         Game addGame(Game player);
         Tournament addTournament(Tournament player);
+        List<Tournament> toTournament(string JsonText);
     }
 }
