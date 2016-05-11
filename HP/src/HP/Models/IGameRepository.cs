@@ -6,6 +6,9 @@ namespace HP.Models
     {
         IEnumerable<string> GetTop(int count);
         void New();
-        void Result();
+        string Result();
+        Player addPlayer(Player player);
+        Game addGame(Game player);
+        Tournament addTournament(Tournament player);
     }
 }

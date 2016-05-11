@@ -1,6 +1,10 @@
-﻿using System;
+﻿using Microsoft.AspNet.Hosting;
+using Microsoft.AspNet.Http;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace HP.Models
@@ -9,10 +13,12 @@ namespace HP.Models
     {
 
         private ApplicationDbContext _context;
+        private IHostingEnvironment _host;
 
-        public GameRepository(ApplicationDbContext context)
+        public GameRepository(ApplicationDbContext context, IHostingEnvironment host)
         {
             _context = context;
+            _host = host;
         }
 
         public IEnumerable<string> GetTop(int count)
@@ -31,9 +37,45 @@ namespace HP.Models
         {
              
         }
-        public void Result()
+        public string Result()
         {
+            var test = _host.WebRootPath;
+            var ResultUrl =test + Startup.Configuration["AppSettings:Url"];
+            var JsonText = readFile(ResultUrl);
 
+            return JsonText;
+
+        }
+
+        public string readFile(string ResultUrl)
+        {
+            
+            var result = "";
+
+            if (File.Exists(ResultUrl))
+            {
+                result = File.ReadAllText(ResultUrl, Encoding.ASCII);
+            }
+
+            return result;
+        }
+        public Player addPlayer(Player player)
+        {
+            _context.Players.Add(player);
+            _context.SaveChanges();
+            return player;
+        }
+        public Game addGame(Game game)
+        {
+            _context.Games.Add(game);
+            _context.SaveChanges();
+            return game;
+        }
+        public Tournament addTournament(Tournament tournament)
+        {
+            _context.Championships.Add(tournament);
+            _context.SaveChanges();
+            return tournament;
         }
     }
 }

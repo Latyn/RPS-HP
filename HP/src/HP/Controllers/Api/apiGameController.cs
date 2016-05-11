@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HP.Models;
+using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace HP.Controllers.Api
 {
@@ -27,12 +29,49 @@ namespace HP.Controllers.Api
         }
         
         [HttpPost("/api/championship/result")]
-        public IActionResult Result()
+        public void Result()
         {
 
-            //Json now as a part of the father controller class
-            return Json(new { name = "Michael"});
+            var JsonText = _repository.Result();
+            var Object = Json(JsonText);
+
+            JArray obj = JArray.Parse(JsonText);
+
+            List<Tournament> Tournaments = new List<Tournament>();
+
+            foreach (var item in obj)
+            {
+                var tournament = new Tournament();
+                List<Game> Games = new List<Game>();
+
+                foreach (var item2 in item)
+                {
+                    var game = new Game();
+                    List<Player> Players = new List<Player>();
+                    foreach (var item3 in item2)
+                    {
+                        var player = new Player();
+                        player.Name = item3[0].ToString();
+                        player.Chose = item3[1].ToString();
+
+                        var tempPlayer =_repository.addPlayer(player);
+                        Players.Add(tempPlayer);
+                                             
+                    }
+                    game.Players = Players;
+
+                    var tempGame = _repository.addGame(game);
+                    Games.Add(tempGame);
+
+                    
+                }
+                tournament.Games = Games;
+                Tournaments.Add(tournament);
+            }
+
+
         }
+
 
         [HttpPost("/api/championship/New")]
         public IActionResult New()
