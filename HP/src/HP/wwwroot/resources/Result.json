@@ -1,10 +1,10 @@
 [
  [
- [ ["Armando", "P"], ["Dave", "S"] ],
- [ ["Richard", "R"], ["Michael", "S"] ]
+	[ ["Armando", "P"], ["Dave", "S"] ],
+	[ ["Dave", "R"], ["Michael", "S"] ]
  ],
  [
- [ ["Allen", "S"], ["Omer", "P"] ],
- [ ["John", "R"], ["Robert", "P"] ]
+	[ ["Allen", "S"], ["Omer", "P"] ],
+	[ ["John", "R"], ["Allen", "P"] ]
  ]
 ]

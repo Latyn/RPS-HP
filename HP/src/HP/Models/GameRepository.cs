@@ -77,5 +77,8 @@ namespace HP.Models
             _context.SaveChanges();
             return tournament;
         }
+        public void setPoints(Game game)
+        {
+        }
     }
 }
