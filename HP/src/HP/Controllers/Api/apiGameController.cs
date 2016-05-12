@@ -66,8 +66,7 @@ namespace HP.Controllers.Api
 
         }
         [HttpPost("/api/championship/clear")]
-        //Example /?first=Dave&second=Armando
-        public void Clear(string first, string second)
+        public void Clear()
         {
             _repository.ClearDB();
         }

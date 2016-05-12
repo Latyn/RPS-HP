@@ -8,6 +8,7 @@ using System.IO;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNet.Hosting;
 using HP.ViewModels.Home;
+using HP.Models;
 
 namespace HP.Controllers
 {
@@ -15,10 +16,12 @@ namespace HP.Controllers
     {
 
         private IHostingEnvironment _environment;
+        private IGameRepository _repository;
 
-        public HomeController(IHostingEnvironment environment)
+        public HomeController(IHostingEnvironment environment, IGameRepository repository)
         {
             _environment = environment;
+            _repository = repository;
         }
 
         public IActionResult Index()
@@ -61,25 +64,12 @@ namespace HP.Controllers
             return View();
         }
 
-        //[HttpPost]
-        //public IActionResult UploadFile()
-        //{
-        //    IFormFile file = Request.Form.Files.GetFile("Photo");
-        //    // FileDetails fileDetails;
-        //    if (file != null)
-        //    {
-        //        using (var reader = new StreamReader(file.OpenReadStream()))
-        //        {
-        //            var fileContent = reader.ReadToEnd();
-        //            var parsedContentDisposition = ContentDispositionHeaderValue.Parse(file.ContentDisposition);
-        //            var fileName = parsedContentDisposition.FileName;
-        //        }
-        //    }
-        //    return View();
-        //}
-        /* public IActionResult UploadFile( )
-         {
-             return View();
-         }*/
+        public ActionResult Clear()
+        {
+            _repository.ClearDB();
+
+            return RedirectToAction("Index");
+        }
+
     }
 }
