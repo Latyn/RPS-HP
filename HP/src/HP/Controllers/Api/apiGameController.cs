@@ -44,15 +44,65 @@ namespace HP.Controllers.Api
             return Json(text);
         }
 
+
         [HttpPost("/api/championship/result")]
-        public void Result()
+        //Example /?first=Dave&second=Armando
+        public JsonResult Result(string first, string second)
+        {
+            Player firstPlayer = new Player();
+            Player secondPlayer = new Player();
+
+
+            //Based on what the solution is asking for there is not a score value to  be saved, the score is initialized as 0
+            firstPlayer.Name = first;
+            firstPlayer.Score = 0;
+            secondPlayer.Name = second;
+            secondPlayer.Score = 0;
+
+            _repository.addPlayer(firstPlayer);
+            _repository.addPlayer(secondPlayer);
+
+            return Json(new { status = "success" });
+
+        }
+        [HttpPost("/api/championship/clear")]
+        //Example /?first=Dave&second=Armando
+        public void Clear(string first, string second)
+        {
+            _repository.ClearDB();
+        }
+        [HttpPost("/api/championship/multiple")]
+        public JsonResult Multiple(string data)
         {
 
-            var JsonText = _repository.Result();
+            //var JsonText = _repository.Result();
 
-            List<Tournament> Tournaments = _repository.toTournament(JsonText);
+            List<Tournament> Tournaments = _repository.toTournament(data);
 
             _repository.CheckTournament(Tournaments);
+
+            return Json(new { status = "success" });
+        }
+
+        [HttpPost("/api/championship/new")]
+        public JsonResult New(string data)
+        {
+            List<Tournament> Tournaments = new List<Tournament>();
+            Tournament Tournament = new Tournament();
+            //var JsonText = _repository.Result();
+
+            Game game = _repository.toGame(data);
+            Tournament.Games = new List<Game>()
+                     {
+                         game
+                     };
+            Tournaments.Add(Tournament);
+            _repository.CheckTournament(Tournaments);
+
+            var player = _repository.checkPlayerByName(Tournament.First);
+            string[] win = new string[2] { player.Name, player.Chose };
+
+            return Json(new { winner = win });
         }
 
 
@@ -99,63 +149,5 @@ namespace HP.Controllers.Api
             }
            
         }
-        ////Method to give the correct structure to Json with no tags
-        //private List<Tournament> toTournament(string JsonText)
-        //{
-        //    //Parse Json text to array
-        //    JArray obj = JArray.Parse(JsonText);
-
-        //    List<Tournament> Tournaments = new List<Tournament>();
-
-
-        //    //Checking each level of the array and parsing to a correct structure
-        //    foreach (var item in obj)
-        //    {
-        //        var tournament = new Tournament();
-        //        List<Game> Games = new List<Game>();
-
-        //        foreach (var item2 in item)
-        //        {
-        //            var game = new Game();
-        //            List<Player> Players = new List<Player>();
-
-        //            foreach (var item3 in item2)
-        //            {
-        //                var player = new Player();
-        //                player.Name = item3[0].ToString();
-        //                player.Chose = item3[1].ToString();
-
-        //                var tempPlayer = _repository.addPlayer(player);
-        //                Players.Add(tempPlayer);
-
-        //            }
-        //            game.Players = Players;
-
-        //            var tempGame = _repository.addGame(game);
-        //            Games.Add(tempGame);
-
-        //        }
-        //        tournament.Games = Games;
-        //        Tournaments.Add(tournament);
-        //    }
-
-        //    return Tournaments;
-        //}
-
-        [HttpPost("/api/championship/New")]
-        public IActionResult New()
-        {
-
-            //Json now as a part of the father controller class
-            return Json("test");
-        }
-
-    }
-    [Newtonsoft.Json.JsonObject(Title = "Players")]
-    public class Test
-    {
-        [Newtonsoft.Json.JsonProperty(PropertyName = "name")]
-        public List<string> Name { get; set; }
-
     }
 }
