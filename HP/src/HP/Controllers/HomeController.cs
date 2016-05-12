@@ -9,6 +9,8 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.AspNet.Hosting;
 using HP.ViewModels.Home;
 using HP.Models;
+using System.Text;
+using Microsoft.AspNet.Mvc.ViewFeatures;
 
 namespace HP.Controllers
 {
@@ -24,9 +26,13 @@ namespace HP.Controllers
             _repository = repository;
         }
 
-        public IActionResult Index()
+        /*public IActionResult Index()
         {
             return View();
+        }*/
+        public IActionResult Index(UploadFileViewModel model)
+        {
+            return View(model);
         }
 
         public IActionResult About()
@@ -58,17 +64,33 @@ namespace HP.Controllers
                     ContentDispositionHeaderValue.Parse(file.ContentDisposition);
                 var filename = Path.Combine(_environment.WebRootPath,
                     "Uploads", parsedContentDisposition.FileName.Trim('"'));
+              
+
+                string text = System.IO.File.ReadAllText(filename);
+
                 file.SaveAsAsync(filename);
+                List<Tournament> Tournaments = _repository.toTournament(text);
+
+                if (Tournaments.Count>1)
+                {
+                    model.message = "This document has more than one tournament on this file";
+                }
+                else
+                {
+                    model.message = "File has been uploaded";
+                }
             }
 
-            return View();
+            return RedirectToAction("Index", model);
         }
 
-        public ActionResult Clear()
+        public ActionResult Clear(UploadFileViewModel model)
         {
             _repository.ClearDB();
 
-            return RedirectToAction("Index");
+            model.message = "DB has been deleted";
+
+            return RedirectToAction("Index", model);
         }
 
         public ActionResult Download(string virtualFilePath)
@@ -78,19 +100,10 @@ namespace HP.Controllers
                 "Downloads", virtualFilePath);
 
             //  var file = File(virtualFilePath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(virtualFilePath));
-            byte[] fileBytes = GetFile(filename);
+            string text = System.IO.File.ReadAllText(filename);
+            byte[] array = Encoding.ASCII.GetBytes(text);
             return File(
-                fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Tournament.txt");
-        }
-
-        byte[] GetFile(string s)
-        {
-            System.IO.FileStream fs = System.IO.File.OpenRead(s);
-            byte[] data = new byte[fs.Length];
-            int br = fs.Read(data, 0, data.Length);
-            if (br != fs.Length)
-                throw new System.IO.IOException(s);
-            return data;
+                array, System.Net.Mime.MediaTypeNames.Application.Octet, "Tournament.txt");
         }
     }
 }
