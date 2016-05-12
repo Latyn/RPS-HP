@@ -89,7 +89,7 @@ namespace HP.Models
             return winnerPlayer;
 
         }
-
+        //Checks first and second place in a tournament
         public void CheckTournament(List<Tournament> Tournaments)
         {
             Player winnerPlayer = new Player();
@@ -100,7 +100,7 @@ namespace HP.Models
             {
                 foreach (var game in tournaments.Games)
                 {
-                   
+                   //Checks game winner
                     Player winner = Winner(game);
                     // check to see if we need to fetch a court's data
                     if (PlayerScores.ContainsKey(winner.Name) == false)
@@ -117,7 +117,12 @@ namespace HP.Models
                     }
                 }
                 winnerPlayer = GetHighest();
-                secondPlayer = GetHighest();
+
+                if (PlayerScores.Count!=0)
+                {
+                    secondPlayer = GetHighest();
+                }
+
                 setPoints(tournaments, winnerPlayer, secondPlayer);
 
                 PlayerScores.Clear();
@@ -125,6 +130,7 @@ namespace HP.Models
             }
         }
 
+        //Get highest player from tournament
         private Player GetHighest()
         {
             Player highestPlayer = new Player();
@@ -150,6 +156,7 @@ namespace HP.Models
             return highestPlayer;
         }
 
+        //Read File from URL
         public string readFile(string ResultUrl)
         {
             
@@ -162,18 +169,24 @@ namespace HP.Models
 
             return result;
         }
+
+        //add Player and save changes
         public Player addPlayer(Player player)
         {
             _context.Players.Add(player);
             _context.SaveChanges();
             return player;
         }
+
+        //Add Games and save changes
         public Game addGame(Game game)
         {
             _context.Games.Add(game);
             _context.SaveChanges();
             return game;
         }
+
+        //add Tournament and save changes
         public Tournament addTournament(Tournament tournament)
         {
             _context.Championships.Add(tournament);
@@ -181,7 +194,7 @@ namespace HP.Models
             return tournament;
         }
 
-        //Method to give the correct structure to Json with no tags
+        //Method to give the correct structure to Json with no tags, multiple tournaments
         public List<Tournament> toTournament(string JsonText)
         {
             //Parse Json text to array
@@ -223,6 +236,30 @@ namespace HP.Models
             }
 
             return Tournaments;
+        }
+
+        //Method to give the correct structure to Json with no tags, games in a single tournament
+        public Game toGame(string JsonText)
+        {
+            //Parse Json text to array
+                JArray obj = JArray.Parse(JsonText);
+                Game game = new Game();
+                List<Player> Players = new List<Player>();
+
+                 foreach (var item2 in obj)
+                {                   
+                        var player = new Player();
+                        player.Name = item2[0].ToString();
+                        player.Chose = item2[1].ToString();
+
+                        var tempPlayer = addPlayer(player);
+                        Players.Add(tempPlayer);
+                }
+
+            game.Players = Players;
+
+            var tempGame = addGame(game);
+            return tempGame;
         }
 
         //method algorithm that takes a two-element list
@@ -280,8 +317,14 @@ namespace HP.Models
 
             _context.SaveChanges();
         }
-        private void ClearDB()
+
+        public Player checkPlayerByName(string name)
         {
+           return _context.Players.Where(m => m.Name == name).First();
+        }
+        public void ClearDB()
+        {
+            //I made this in this way due I am working with entity framework 7 and it seems to have just a new version so bindings and delete cascade is not working properly 
 
             _context.Players.ToList().ForEach(p => _context.Players.Remove(p));
             _context.SaveChanges();
