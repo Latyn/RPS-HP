@@ -32,3 +32,6 @@ textarea {
         z-index: 10 !important;
     }
 }
+.topMarging{
+    margin-top : 40px;
+}
