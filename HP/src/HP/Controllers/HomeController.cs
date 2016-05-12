@@ -71,5 +71,26 @@ namespace HP.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult Download(string virtualFilePath)
+        {
+
+            var filename = Path.Combine(_environment.WebRootPath,
+                "Downloads", virtualFilePath);
+
+            //  var file = File(virtualFilePath, System.Net.Mime.MediaTypeNames.Application.Octet, Path.GetFileName(virtualFilePath));
+            byte[] fileBytes = GetFile(filename);
+            return File(
+                fileBytes, System.Net.Mime.MediaTypeNames.Application.Octet, "Tournament.txt");
+        }
+
+        byte[] GetFile(string s)
+        {
+            System.IO.FileStream fs = System.IO.File.OpenRead(s);
+            byte[] data = new byte[fs.Length];
+            int br = fs.Read(data, 0, data.Length);
+            if (br != fs.Length)
+                throw new System.IO.IOException(s);
+            return data;
+        }
     }
 }
