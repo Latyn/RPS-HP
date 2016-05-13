@@ -22,7 +22,8 @@ namespace HP.Models
                 var newPlayer = new Player()
                 {
                     Name = "Armando",
-                    Chose = Selection.P.ToString()
+                    Chose = Selection.P.ToString(),
+                    Score = 6
 
                 };
                 _context.Players.Add(newPlayer);
@@ -31,7 +32,8 @@ namespace HP.Models
                 var newPlayer2 = new Player()
                 {
                     Name = "Dave",
-                    Chose = Selection.S.ToString()
+                    Chose = Selection.S.ToString(),
+                    Score=9
 
                 };
                 _context.Players.Add(newPlayer2);
@@ -40,7 +42,8 @@ namespace HP.Models
                 var newPlayer3 = new Player()
                 {
                     Name = "Richard",
-                    Chose = Selection.R.ToString()
+                    Chose = Selection.R.ToString(),
+                    Score = 3
 
                 };
                 _context.Players.Add(newPlayer3);
@@ -49,7 +52,8 @@ namespace HP.Models
                 var newPlayer4 = new Player()
                 {
                     Name = "Michael",
-                    Chose = Selection.S.ToString()
+                    Chose = Selection.S.ToString(),
+                    Score = 6
 
                 };
                 _context.Players.Add(newPlayer4);
@@ -58,7 +62,8 @@ namespace HP.Models
                 var newPlayer5 = new Player()
                 {
                     Name = "Allen",
-                    Chose = Selection.S.ToString()
+                    Chose = Selection.S.ToString(),
+                    Score = 9
 
                 };
                 _context.Players.Add(newPlayer5);
@@ -67,7 +72,8 @@ namespace HP.Models
                 var newPlayer6 = new Player()
                 {
                     Name = "Omer",
-                    Chose = Selection.P.ToString()
+                    Chose = Selection.P.ToString(),
+                    Score = 3
 
                 };
                 _context.Players.Add(newPlayer6);
@@ -76,7 +82,8 @@ namespace HP.Models
                 var newPlayer7 = new Player()
                 {
                     Name = "John",
-                    Chose = Selection.R.ToString()
+                    Chose = Selection.R.ToString(),
+                    Score = 6
 
                 };
                 _context.Players.Add(newPlayer7);
@@ -85,7 +92,8 @@ namespace HP.Models
                 var newPlayer8 = new Player()
                 {
                     Name = "Robert",
-                    Chose = Selection.P.ToString()
+                    Chose = Selection.P.ToString(),
+                    Score = 9
 
                 };
                 _context.Players.Add(newPlayer8);
@@ -99,7 +107,7 @@ namespace HP.Models
                         newPlayer,
                         newPlayer2
                     },
-                    Winner = newPlayer2.Id
+                    Winner = newPlayer2.Name
                 };
 
                 var newGame2 = new Game()
@@ -109,7 +117,7 @@ namespace HP.Models
                         newPlayer3,
                         newPlayer4
                     },
-                    Winner = newPlayer3.Id
+                    Winner = newPlayer3.Name
                 };
                 var newGame3 = new Game()
                 {
@@ -118,7 +126,7 @@ namespace HP.Models
                         newPlayer5,
                         newPlayer6
                     },
-                    Winner = newPlayer5.Id
+                    Winner = newPlayer5.Name
                 };
                 var newGame4 = new Game()
                 {
@@ -127,7 +135,7 @@ namespace HP.Models
                         newPlayer7,
                         newPlayer8
                     },
-                    Winner = newPlayer8.Id
+                    Winner = newPlayer8.Name
                 };
                 _context.Games.Add(newGame);
                 _context.Games.Add(newGame2);

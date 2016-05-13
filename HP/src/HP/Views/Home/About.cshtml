@@ -5,3 +5,101 @@
 <h3>@ViewData["Message"]</h3>
 
 <p>Use this area to provide additional information.</p>
+
+<h1>Rock-Paper-Scissors</h1>
+
+<h3>POST api/championship/result</h3>
+<p>
+    Stores the first and second place of a tournament, each user is stored with their respective scores. The
+    user names will be unique, but the same user can win 1 or more championships. Returns the operation
+    status if successfully.
+</p>
+<h4>Resource information:</h4>
+<div>Resource URL: /api/championship/result</div>
+<div>HTTP Method: POST</div>
+<div>Response format: JSON</div>
+<h4>Parameters:</h4>
+<p>
+    first (required)
+    The name of the winner of the championship.
+    Example: Dave
+</p>
+<p>
+    second (required)
+    The name of the second place of the
+    championship.
+    Example: Armando
+</p>
+<h4>Example Request</h4>
+<h5>POST</h5>
+<h3>http:/domain/api/championship/result</h3>
+<h3>POST Data</h3>
+<b>first=Dave&second=Armando</b>
+<p>
+    Example Output
+    {
+    status: 'success'
+    }
+</p>
+<img src="~/images/New Values.png" alt="Alternate Text" />
+
+<h3>GET api/championship/top</h3>
+<p>
+    Retrieves the top players of all championships. Returns the list of player names based on the count provided.
+</p>
+<h4>Resource information:</h4>
+<div>Resource URL: /api/championship/top</div>
+<div>HTTP Method: POST</div>
+<div>Response format: JSON</div>
+<h4>Parameters:</h4>
+<p>
+    count (optional)
+    Sets the count of records to be retrieved. If not provided, the default value is 10.
+    Example: 123
+</p>
+<h4>Example Request</h4>
+<h5>POST</h5>
+<h3>http:/domain/api/championship/top?count=10</h3>
+<p>
+    Example Output
+    {
+    players: ["Dave", "Armando", "Robert"]
+    }
+</p>
+<img src="~/images/count 2.png" alt="Alternate Text" />
+<p>Example using a count parameter</p>
+<img src="~/images/countTop.png" alt="Alternate Text" />
+<p>Example without a count, 10 will be the default value</p>
+
+<h3>POST api/championship/new</h3>
+<p>
+    Receives the championship data and computes it to identify the winner. The first and second place are stored into a database with their respective scores. Returns the winner of the championship.
+</p>
+<h4>Resource information:</h4>
+<div>Resource URL: /api/championship/new</div>
+<div>HTTP Method: POST</div>
+<div>Response format: JSON</div>
+<h4>Parameters:</h4>
+<p>
+    The data of the championship following the bracketed array standard.
+    Example:
+    <b>[["Armando", "P"],["Dave", "S"]]</b>
+</p>
+<h4>Example Request</h4>
+<h5>POST</h5>
+<h3>http:/domain/api/championship/new</h3>
+<p>
+    POST Data
+</p>
+<b>data=[["Armando", "P"],["Dave", "S"]]</b>
+<p>
+    Example Output
+    {
+    winner: ["Dave", "S"]
+    }
+</p>
+<img src="~/images/New.png" alt="Alternate Text" />
+
+
+
+

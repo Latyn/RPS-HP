@@ -39,19 +39,31 @@ namespace HP.Controllers
         {
             ViewData["Message"] = "This challenge consists on creating a solution to a small problem and then making it publicly available in the web.";
 
-            return View();
+            return base.View();
         }
 
         public IActionResult Contact()
         {
             ViewData["Message"] = "HP challenge contact page.";
 
-            return View();
+            return base.View();
         }
 
         public IActionResult Error()
         {
-            return View();
+            return base.View();
+        }
+        public IActionResult List()
+        {
+            var names = _repository.GetTop(10);
+            List<Player> model = new List<Player>();
+
+            foreach (var item in names)
+            {
+                var player = _repository.checkPlayerByName(item);
+                model.Add(player);
+            }
+            return View(model);
         }
 
         [HttpPost]
@@ -77,6 +89,11 @@ namespace HP.Controllers
                 }
                 else
                 {
+                    _repository.CheckTournament(Tournaments);
+                    model.winner = Tournaments[0].First;
+                    model.second = Tournaments[0].Second;
+                    model.winnerScore = Tournaments[0].FirstPlaceScore;
+                    model.secondScore = Tournaments[0].SecondPlaceScore;
                     model.message = "File has been uploaded";
                 }
             }

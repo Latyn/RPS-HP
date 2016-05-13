@@ -19,10 +19,11 @@ namespace HP.Controllers.Api
         {
             _repository = repository;
         }
-        
-        [HttpGet ("api/championship/top")]
-        public JsonResult Top( int count )
+
+        [HttpGet("api/championship/top")]
+        public JsonResult Top(int count)
         {
+
             string[] tops  = _repository.GetTop(count).ToArray();
 
             //Json now as a part of the father controller class
@@ -49,18 +50,46 @@ namespace HP.Controllers.Api
         //Example /?first=Dave&second=Armando
         public JsonResult Result(string first, string second)
         {
+            Tournament tournament = new Tournament();
             Player firstPlayer = new Player();
             Player secondPlayer = new Player();
 
+            var player1 = _repository.checkPlayerByName(first);
+            var player2 = _repository.checkPlayerByName(second);
 
             //Based on what the solution is asking for there is not a score value to  be saved, the score is initialized as 0
-            firstPlayer.Name = first;
-            firstPlayer.Score = 0;
-            secondPlayer.Name = second;
-            secondPlayer.Score = 0;
+
+            if (player1!=null)
+            {
+                firstPlayer.Name = player1.Name;
+                firstPlayer.Score = player1.Score;
+            }
+            else
+            {
+                firstPlayer.Name = first;
+                firstPlayer.Score = 0;
+            }
+
+            if (player2 != null)
+            {
+                secondPlayer.Name = player2.Name;
+                secondPlayer.Score = player2.Score;
+            }
+            else
+            {
+                secondPlayer.Name = second;
+                secondPlayer.Score = 0;
+            }
 
             _repository.addPlayer(firstPlayer);
             _repository.addPlayer(secondPlayer);
+
+            tournament.First = firstPlayer.Name;
+            tournament.Second = secondPlayer.Name;
+            tournament.FirstPlaceScore = firstPlayer.Score;
+            tournament.SecondPlaceScore = secondPlayer.Score;
+
+            _repository.addTournament(tournament);
 
             return Json(new { status = "success" });
 
@@ -97,7 +126,7 @@ namespace HP.Controllers.Api
                      };
             Tournaments.Add(Tournament);
             _repository.CheckTournament(Tournaments);
-
+           
             var player = _repository.checkPlayerByName(Tournament.First);
             string[] win = new string[2] { player.Name, player.Chose };
 

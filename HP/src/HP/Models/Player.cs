@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,13 +10,10 @@ namespace HP.Models
 {
     public class Player
     {
-        //[JsonProperty("")]
+
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public string Name { get; set; }
 
-        [JsonIgnore]
-        public int Id { get; set; }
-
-        //[JsonProperty("")]
         //Strategy
         public string Chose { get; set; }
 

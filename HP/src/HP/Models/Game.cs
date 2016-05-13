@@ -9,6 +9,6 @@ namespace HP.Models
     {
         public int Id { get; set; }
         public List<Player> Players{ get; set; }
-        public int Winner { get; set; }
+        public string Winner { get; set; }
     }
 }

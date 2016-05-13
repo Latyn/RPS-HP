@@ -107,7 +107,7 @@ namespace HP.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     TournamentId = table.Column<int>(nullable: true),
-                    Winner = table.Column<int>(nullable: false)
+                    Winner = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -166,16 +166,14 @@ namespace HP.Migrations
                 name: "Player",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                    Name = table.Column<string>(nullable: false),
                     Chose = table.Column<string>(nullable: true),
                     GameId = table.Column<int>(nullable: true),
-                    Name = table.Column<string>(nullable: true),
                     Score = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Player", x => x.Id);
+                    table.PrimaryKey("PK_Player", x => x.Name);
                     table.ForeignKey(
                         name: "FK_Player_Game_GameId",
                         column: x => x.GameId,

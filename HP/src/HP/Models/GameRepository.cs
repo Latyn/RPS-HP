@@ -28,11 +28,11 @@ namespace HP.Models
         {
             if (count == 0)
             {
-                return _context.Championships.Select(m => m.First).ToList();
+                return _context.Championships.Select(m => m.First).Take(10).ToList().Distinct();
             }
             else
             {
-                return _context.Championships.Select(m => m.First).Take(count).ToList();
+                return _context.Championships.Select(m => m.First).Take(count).ToList().Distinct();
             }
 
         }
@@ -100,21 +100,29 @@ namespace HP.Models
             {
                 foreach (var game in tournaments.Games)
                 {
-                   //Checks game winner
-                    Player winner = Winner(game);
-                    // check to see if we need to fetch a court's data
-                    if (PlayerScores.ContainsKey(winner.Name) == false)
+
+                    foreach (var player in game.Players)
                     {
-                        value = 0;
-                        if (winner.Name != null)
+                        //Checks game winner
+                        Player winner = Winner(game);
+                        // check to see if we need to fetch a court's data
+                        if (PlayerScores.ContainsKey(winner.Name) == false)
                         {
-                            PlayerScores[winner.Name] = value += 1;
+                            value = 0;
+                            if (player.Name != null)
+                            {
+                                PlayerScores[player.Name] = value += 1;
+                            }
+                        }
+                        else
+                        {
+                            if (player.Name == winner.Name)
+                            {
+                                PlayerScores[player.Name] = value += 1;
+                            }
                         }
                     }
-                    else
-                    {
-                        PlayerScores[winner.Name] = value += 1;
-                    }
+
                 }
                 winnerPlayer = GetHighest();
 
@@ -173,8 +181,14 @@ namespace HP.Models
         //add Player and save changes
         public Player addPlayer(Player player)
         {
-            _context.Players.Add(player);
-            _context.SaveChanges();
+            var playerExist = _context.Players.Where(m => m.Name == player.Name).First();
+
+            if (playerExist==null)
+            {
+                _context.Players.Add(player);
+                _context.SaveChanges();
+            }
+
             return player;
         }
 
@@ -216,12 +230,28 @@ namespace HP.Models
 
                     foreach (var item3 in item2)
                     {
-                        var player = new Player();
-                        player.Name = item3[0].ToString();
-                        player.Chose = item3[1].ToString();
+                        Player playerExist = null;
 
-                        var tempPlayer = addPlayer(player);
-                        Players.Add(tempPlayer);
+                        if (_context.Players.Count() > 0)
+                        {
+                            playerExist = _context.Players.Where(m => m.Name == item3[0].ToString()).First();
+                        }
+
+                        var player = new Player();
+
+                        if (playerExist == null)
+                        {
+                            player.Name = item3[0].ToString();
+                            player.Chose = item3[1].ToString();
+                            var tempPlayer = addPlayer(player);
+                            Players.Add(tempPlayer);
+                        }
+                        else
+                        {
+                            player.Name = playerExist.Name;
+                            player.Chose = playerExist.Chose;
+                            Players.Add(playerExist);
+                        }
 
                     }
                     game.Players = Players;
@@ -246,14 +276,32 @@ namespace HP.Models
                 Game game = new Game();
                 List<Player> Players = new List<Player>();
 
-                 foreach (var item2 in obj)
-                {                   
-                        var player = new Player();
+
+                foreach (var item2 in obj)
+                {
+                     Player playerExist = null;
+
+                    if (_context.Players.Count() > 0)
+                    {
+                         playerExist = _context.Players.Where(m => m.Name == item2[0].ToString()).First();
+                    }
+                    
+                    var player = new Player();
+
+                    if (playerExist == null)
+                    {
                         player.Name = item2[0].ToString();
                         player.Chose = item2[1].ToString();
-
                         var tempPlayer = addPlayer(player);
                         Players.Add(tempPlayer);
+                    }
+                    else
+                    {
+                        player.Name = playerExist.Name;
+                        player.Chose = playerExist.Chose;
+                        Players.Add(playerExist);
+                   }              
+
                 }
 
             game.Players = Players;
@@ -273,10 +321,11 @@ namespace HP.Models
             }
             else
             {
-                switch (game.Players[0].Chose)
+                var chose = game.Players[0].Chose.ToUpper();
+                switch (chose)
                 {
                     case "R":
-                        switch (game.Players[1].Chose)
+                        switch (game.Players[1].Chose.ToUpper())
                         {
                             case "P": return game.Players[1];
                             case "S": return game.Players[0];
@@ -284,7 +333,7 @@ namespace HP.Models
                             default: throw new Exception("Logic fail.");
                         }
                     case "S":
-                        switch (game.Players[1].Chose)
+                        switch (game.Players[1].Chose.ToUpper())
                         {
                             case "R": return game.Players[1];
                             case "P": return game.Players[0];
@@ -292,7 +341,7 @@ namespace HP.Models
                             default: throw new Exception("Logic fail.");
                         }
                     case "P":
-                        switch (game.Players[1].Chose)
+                        switch (game.Players[1].Chose.ToUpper())
                         {
                             case "S": return game.Players[1];
                             case "R": return game.Players[0];

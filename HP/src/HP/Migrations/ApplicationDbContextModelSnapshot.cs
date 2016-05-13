@@ -71,25 +71,23 @@ namespace HP.Migrations
 
                     b.Property<int?>("TournamentId");
 
-                    b.Property<int>("Winner");
+                    b.Property<string>("Winner");
 
                     b.HasKey("Id");
                 });
 
             modelBuilder.Entity("HP.Models.Player", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<string>("Name")
                         .ValueGeneratedOnAdd();
 
                     b.Property<string>("Chose");
 
                     b.Property<int?>("GameId");
 
-                    b.Property<string>("Name");
-
                     b.Property<int>("Score");
 
-                    b.HasKey("Id");
+                    b.HasKey("Name");
                 });
 
             modelBuilder.Entity("HP.Models.Tournament", b =>
