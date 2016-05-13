@@ -79,7 +79,7 @@ namespace HP
             {
                 app.UseBrowserLink();
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
+               // app.UseDatabaseErrorPage();
             }
             else
             {

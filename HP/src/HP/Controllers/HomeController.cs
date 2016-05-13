@@ -32,6 +32,7 @@ namespace HP.Controllers
         }*/
         public IActionResult Index(UploadFileViewModel model)
         {
+            model.buttons = _repository.CheckDB();
             return View(model);
         }
 
@@ -69,6 +70,8 @@ namespace HP.Controllers
         [HttpPost]
         public  ActionResult UploadFile(UploadFileViewModel model)
         {
+             
+
             if (ModelState.IsValid)
             {
                 var file = model.File;
@@ -85,7 +88,7 @@ namespace HP.Controllers
 
                 if (Tournaments.Count>1)
                 {
-                    model.message = "This document has more than one tournament on this file";
+                    model.message = "This document has more than one tournament on it";
                 }
                 else
                 {
@@ -106,10 +109,20 @@ namespace HP.Controllers
             _repository.ClearDB();
 
             model.message = "DB has been deleted";
+            model.buttons = true;
 
             return RedirectToAction("Index", model);
         }
 
+        public ActionResult Seed(UploadFileViewModel model)
+        {
+            _repository.Seed();
+
+            model.message = "Values inserted to Data Base";
+            model.buttons = false;
+
+            return RedirectToAction("Index", model);
+        }
         public ActionResult Download(string virtualFilePath)
         {
 

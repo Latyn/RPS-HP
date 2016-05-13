@@ -17,13 +17,27 @@ namespace HP.Models
         private ApplicationDbContext _context;
         private IHostingEnvironment _host;
         static Dictionary<string, int> PlayerScores = new Dictionary<string, int>();
+        SeedingData _seeder;
 
-        public GameRepository(ApplicationDbContext context, IHostingEnvironment host)
+        public GameRepository(ApplicationDbContext context, IHostingEnvironment host, SeedingData seeder)
         {
             _context = context;
             _host = host;
+            _seeder = seeder;
         }
 
+        public bool CheckDB()
+        {
+            if (_context.Players.Any())
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+
+        }
         public IEnumerable<string> GetTop(int count)
         {
             if (count == 0)
@@ -181,7 +195,12 @@ namespace HP.Models
         //add Player and save changes
         public Player addPlayer(Player player)
         {
-            var playerExist = _context.Players.Where(m => m.Name == player.Name).First();
+            var playerExist =new Player();
+
+            if (player.Name != null && player.Name != "")
+            {
+                playerExist = _context.Players.Where(m => m.Name == player.Name).First();
+            }
 
             if (playerExist==null)
             {
@@ -376,14 +395,14 @@ namespace HP.Models
             //I made this in this way due I am working with entity framework 7 and it seems to have just a new version so bindings and delete cascade is not working properly 
 
             _context.Players.ToList().ForEach(p => _context.Players.Remove(p));
-            _context.SaveChanges();
-
-            _context.Championships.ToList().ForEach(p => _context.Games.ToList().ForEach(e => _context.Games.Remove(e)));
-            _context.SaveChanges();
-
+            _context.Games.ToList().ForEach(p => _context.Games.Remove(p));
             _context.Championships.ToList().ForEach(p => _context.Championships.Remove(p));
             _context.SaveChanges();
 
+        }
+        public void Seed()
+        {
+            _seeder.EnsureSeedData();
         }
     }
 }

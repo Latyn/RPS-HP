@@ -15,6 +15,8 @@ namespace HP.Models
         Game toGame(string JsonText);
         void CheckTournament(List<Tournament> Tournaments);
         void ClearDB();
+        void Seed();
         Player checkPlayerByName(string name);
+        bool CheckDB();
     }
 }

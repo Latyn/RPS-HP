@@ -10,13 +10,23 @@ function  checkValue() {
        // alert("The text has been changed.");
         var obj = this;
 
-        if (obj.value != "" || obj.value != null) {
-            $('#upload').show();
-            
+        //Validate just txt types
+        if (obj.value.lastIndexOf(".txt") == -1) {
+
+            alert("Please upload only .txt extention file");
         }
         else {
-            $('#upload').hide();
+            if (obj.value != "" || obj.value != null) {
+                $('#upload').show();
+
+            }
+            else {
+                $('#upload').hide();
+            }
         }
         
     });
+
+
+
 }());

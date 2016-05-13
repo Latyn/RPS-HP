@@ -46,33 +46,43 @@
         <div class="alert alert-success text-center" role="alert">@Model.message</div>
     }
 </div>
-<div class="row">
-    <div class="col-sm-3">
-        <h2>Application uses</h2>
-        <ul>
-            <li>Sample site using ASP.NET MVC 6</li>
-            <li><a href="http://go.microsoft.com/fwlink/?LinkId=518007">Gulp</a> and <a href="http://go.microsoft.com/fwlink/?LinkId=518004">Bower</a> for managing client-side libraries</li>
-            <li>Theming using <a href="http://go.microsoft.com/fwlink/?LinkID=398939">Bootstrap</a></li>
-        </ul>
+@if (Model != null && Model.winner != null && Model.second != null)
+{
+    <div class="row topMarging">
+        <div class="col-sm-12">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Uploaded Tournament Result</div>
+                <ul class="list-group">
+                    <li class="list-group-item">@Model.winner is the winner.</li>
+                    <li class="list-group-item">@Model.second is the second place.</li>
+                </ul>
+            </div>
+        </div>
     </div>
-    <div class="col-sm-4 topMarging">
+}
+<div class="row">
+    @if (Model != null && Model.buttons == false)
+    {
+    <div class="col-sm-12 topMarging">
             @using (Html.BeginForm("UploadFile", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
             {
-                <div class="row">
-                    <div class="col-sm-12 text-center">
-                        <label>Upload a Championship document</label>
-                        @Html.TextBoxFor(m => m.File, new { type = "file" })
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-6 text-center topMarging">
-                        <input id="upload" type="submit" value="Upload" class="btn btn-info" />
-                    </div>
-                </div>
-
+                        <div class="row">
+                            <div class="col-sm-4 col-sm-offset-4">
+                                <label>Upload a Championship document</label>
+                                @Html.TextBoxFor(m => m.File, new { type = "file"})
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12 text-center topMarging">
+                                <input id="upload" type="submit" value="Upload" class="btn btn-info" />
+                            </div>
+                        </div>
             }
     </div>
-    <div class="col-sm-4 topMarging">
+    }
+    <div class="col-sm-12 topMarging">
+        @if (Model != null && Model.buttons == false)
+        {
         <div class="row">
             <div class="col-sm-12 text-center">
                 <label>Delete all values in data Base</label>
@@ -81,42 +91,40 @@
                 <a href="@Url.Action("Clear")" id="clear" class="btn btn-info">Clear Data Base</a>
             </div>
         </div>
+        }
+        @if (Model != null && Model.buttons == true)
+        {
+        <div class="row topMarging">
+            <div class="col-sm-12 text-center">
+                <label>Generate all values in data Base</label>
+            </div>
+            <div class="col-sm-12 text-center">
+                <a href="@Url.Action("Seed")" id="seed" class="btn btn-info">Seed Data Base</a>
+            </div>
+        </div>
+        }
         <div class="row topMarging">
             <div class="col-sm-12 text-center">
                 <label>Check top 10</label>
             </div>
             <div class="col-sm-12 text-center">
-                <a href="@Url.Action("List")" id="clear" class="btn btn-info btnSize">Top</a>
+                <a href="@Url.Action("List")" id="top" class="btn btn-info btnSize">Top</a>
             </div>
         </div>
     </div>
 </div>
-@if (Model != null && Model.winner!=null && Model.second != null)
-{
-<div class="row topMarging">
-    <div class="col-sm-12">
-        <div class="panel panel-primary">
-            <div class="panel-heading">Uploaded Tournament Result</div>
-                <ul class="list-group">
-                    <li class="list-group-item">@Model.winner is the winner.</li>
-                    <li class="list-group-item">@Model.second is the second place.</li>
-                </ul>
-        </div>
-    </div>
-</div>
-}
 <div class="row">
     <div class="col-sm-12 text-center">
         <h2>Examples</h2>
     </div>
     <div class="col-sm-12 text-center">
-        <a href="@Url.Action("Download", "Home", new { virtualFilePath = "Download Example 1.txt" })" id="fileOne" >API Example 1</a>
+        <a href="@Url.Action("Download", "Home", new { virtualFilePath = "Download Example 1.txt" })" id="fileOne" >API Multiple Championships</a>
     </div>
     <div class="col-sm-12 text-center">
         <a href="@Url.Action("Download", "Home", new { virtualFilePath = "Download Example 2.txt" })" id="fileOne">API Example 2</a>
     </div>
     <div class="col-sm-12 text-center">
-        <a href="@Url.Action("Download", "Home", new { virtualFilePath = "Download Example 3.txt" })" id="fileOne">API Example 3</a>
+        <a href="@Url.Action("Download", "Home", new { virtualFilePath = "Download Example 3.txt" })" id="fileOne">API Tournament as Document Example</a>
     </div>
 </div>
 

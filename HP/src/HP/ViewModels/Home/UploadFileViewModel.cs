@@ -16,5 +16,6 @@ namespace HP.ViewModels.Home
         public string second { get; set; }
         public int winnerScore { get; set; }
         public int secondScore { get; set; }
+        public bool buttons { get; set; } = true;
     }
 }
