@@ -79,11 +79,15 @@ namespace HP.Controllers
                     ContentDispositionHeaderValue.Parse(file.ContentDisposition);
                 var filename = Path.Combine(_environment.WebRootPath,
                     "Uploads", parsedContentDisposition.FileName.Trim('"'));
-              
+
+                file.SaveAs(filename);
 
                 string text = System.IO.File.ReadAllText(filename);
 
-                file.SaveAsAsync(filename);
+
+
+
+
                 List<Tournament> Tournaments = _repository.toTournament(text);
 
                 if (Tournaments.Count>1)
